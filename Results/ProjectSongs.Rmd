@@ -1,0 +1,151 @@
+---
+title: "Song Streaming"
+author: "Maria P"
+output: pdf_document
+---
+
+
+# Introduction
+There are a lot of songs and artists but not all of them became famous or well-known.  The dataset used contains information about the most streamed songs on the Spotify platforms. There are many things to take into consideration when making and producing a song. In this file, we are looking at what are some things or aspects that make a song stand out and how some aspects might be related to each other.
+
+Data set obtained from: https://www.kaggle.com/datasets/amaanansari09/most-streamed-songs-all-time
+
+# Loading data and libraries
+Here we are loading and importing all the libraries and data necessary to perform analyses on the dataset.
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(ggpubr)
+
+Features <- read.csv("~/Downloads/archive/Features.csv")
+Streams <- read.csv("~/Downloads/archive/Streams.csv")
+
+```
+
+\newpage
+
+# Data summary
+Here is a summary or a quick overview of the data that helps to get an idea of what the data is about and what we will be working with. As we can see two files will be used. In Features the data that are available are id, name, duration, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, and danceability of a song. For Streams we have Song, Artist, Streams..Billions. and Release.Date.
+
+```{r}
+summary(Features)
+```
+```{r}
+summary(Streams)
+```
+\newpage
+
+# Exploring Data
+
+## Streaming
+
+#### Most and least streamed songs
+```{r}
+Streams %>%
+  top_n(10,Streams..Billions.) %>%
+  select(Song,Artist,Streams..Billions.)
+
+Streams %>%
+  top_n(-1,Streams..Billions.) %>%
+  select(Song,Artist,Streams..Billions.)
+
+
+```
+
+In this section, we observe that all of the top 10 most streamed songs have over 2 billion streams, and the song with the least streams even though is the last has over 1 billion streams.
+
+\newpage
+
+## Boxplots
+
+```{r}
+boxplot(Features$duration~Features$mode,
+        main = "Duration vs Mode",
+        ylab = "Duration",
+        xlab = "Mode",
+        col = cm.colors(2))
+aggregate(duration ~ mode, Features, mean)
+
+```
+In this boxplot, it looks like the mean duration between mode 0 and mode 1 is about the same.
+
+\newpage
+ 
+```{r}
+boxplot(Features$duration~Features$key,
+        main = "Duration vs Key",
+        ylab = "Duration",
+        xlab = "Key",
+        col = rainbow(11))
+
+aggregate(duration ~ key, Features, mean)
+
+```
+In this plot is shown that the mean duration between key 0 to 11 are about the same.
+
+\newpage
+
+```{r}
+boxplot(Features$energy~Features$mode,
+        main = "Energy vs Mode",
+        ylab = "Duration",
+        xlab = "Mode",
+        col = c("purple","red"))
+aggregate(energy ~ mode, Features, mean)
+```
+It looks like the mean energy between mode 0 and mode 1 is about the same.
+
+\newpage
+```{r}
+boxplot(Features$energy~Features$key,
+        main = "Energy vs Key",
+        ylab = "Energy",
+        xlab = "Key",
+        col = rainbow(11))
+
+aggregate(energy ~ key, Features, mean)
+
+```
+The mean energy between key 0 to 11 is overall about the same.
+\newpage
+
+## Linear Relationship
+
+
+```{r}
+b = ggplot(Features,aes(energy, loudness)) + geom_point() + 
+  geom_smooth(method="lm")  + ggtitle("energy vs loudness")
+c = ggplot(Features,aes(energy, duration)) + geom_point() + 
+  geom_smooth(method="lm")  + ggtitle("energy vs duration")
+d = ggplot(Features,aes(energy, liveness)) + geom_point() + 
+  geom_smooth(method="lm")  + ggtitle("energy vs liveness")
+e = ggplot(Features,aes(danceability, loudness)) +  geom_point() + 
+  geom_smooth(method="lm")  + ggtitle("danceability vs loudness")
+
+ggarrange(b,c,d,e)
+```
+
+Between the different graphs shown in the portion above  there seems to be a relationship between some but only the first one (loudness vs energy) seems to have a linear relation.
+
+\newpage
+
+```{r}
+f = ggplot(Features,aes(danceability, duration)) +  geom_point() + 
+  geom_smooth(method="lm") + ggtitle("danceability vs duration")
+g = ggplot(Features,aes(danceability, liveness)) +   geom_point() + 
+  geom_smooth(method="lm") +  ggtitle("danceability vs liveness")
+h = ggplot(Features,aes(loudness, duration)) +   geom_point() + 
+  geom_smooth(method="lm") +  ggtitle("loudness vs duration")
+i =  ggplot(Features,aes(loudness, liveness)) +   geom_point() + 
+  geom_smooth(method="lm")  +  ggtitle("loudness vs liveness")
+
+ggarrange(f,g,h,i)
+```
+On this set of graphs, the first one (duration vs danceability) is the only one that has a linear relation.
+
+
+# Conclusion
+In this file we were able to graph and compare part of the data we have and form the data analysis and manipulation that was done, it was possible to observe that the most streamed songs had some relationships between them.
+
+
